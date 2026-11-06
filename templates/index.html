@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>TeamUp · Find the teammate your project is missing</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f4f9;--card:#fff;--ink:#0f1b2d;--mute:#5d6b7e;--line:#dde4ed;--brand:#0b7a75;--brand-d:#085c58;--hi:#f2a900;--soft:#f6f8fb;--shadow:0 1px 2px #0f1b2d12,0 8px 24px -12px #0f1b2d33}
+@media (prefers-color-scheme:dark){:root{--bg:#0b121c;--card:#142031;--ink:#e8eef5;--mute:#93a3b8;--line:#243449;--brand:#2fb5ad;--brand-d:#5fd0c9;--soft:#101b2a;--shadow:0 8px 24px -12px #000a}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,sans-serif}
+h1,h2,h3{font-family:'Bricolage Grotesque',Inter,sans-serif;margin:0;letter-spacing:-.02em}
+a{color:var(--brand-d);font-weight:600;text-decoration:none}a:hover{text-decoration:underline}
+header{position:sticky;top:0;z-index:5;background:#0c1726ee;backdrop-filter:blur(10px);color:#fff;padding:10px 22px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;border-bottom:1px solid #ffffff18}
+.logo{display:flex;align-items:center;gap:10px;font:800 23px 'Bricolage Grotesque'}.logo svg{width:30px;height:30px}
+header .sp{flex:1}nav{display:flex;gap:4px;flex-wrap:wrap}
+nav button{position:relative;background:none;border:0;color:#aebdd0;padding:8px 14px;border-radius:9px;cursor:pointer;font:600 14px Inter;transition:.15s}
+nav button:hover{color:#fff;background:#ffffff14}nav button.on{background:var(--brand);color:#fff}
+.badge{position:absolute;top:0;right:0;background:var(--hi);color:#241a00;border-radius:99px;font:700 11px Inter;padding:1px 6px}
+main{max-width:1140px;margin:0 auto;padding:22px 16px 60px}
+.hero{border-radius:18px;padding:34px 30px;margin-bottom:18px;color:#fff;position:relative;overflow:hidden;
+ background:radial-gradient(circle at 85% 20%,#14a39b55,transparent 45%),linear-gradient(135deg,#0c1726,#123a47)}
+.hero::after{content:"";position:absolute;inset:0;background-image:radial-gradient(#ffffff22 1px,transparent 1px);background-size:22px 22px;mask-image:linear-gradient(90deg,transparent 30%,#000);pointer-events:none}
+.hero h2{font-size:clamp(26px,4vw,40px);font-weight:800;max-width:640px;line-height:1.1}.hero p{max-width:560px;color:#c3d1e2;margin:12px 0 20px}
+.stats{display:flex;gap:30px;flex-wrap:wrap;position:relative;z-index:1}.stats b{display:block;font:800 30px 'Bricolage Grotesque'}.stats span{color:#a9bbd0;font-size:13px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.card.hover{transition:.18s}.card.hover:hover{transform:translateY(-2px)}
+.grid{display:grid;gap:16px;grid-template-columns:300px 1fr;align-items:start}@media(max-width:820px){.grid{grid-template-columns:1fr}}
+.side{position:sticky;top:76px}@media(max-width:820px){.side{position:static}}
+/* desktop: filters and results are two panes, each with its own scrollbar */
+@media(min-width:821px){.side,.pane{position:sticky;top:76px;max-height:calc(100vh - 92px);overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+.pane{padding:4px 8px 4px 2px}.side{margin-bottom:0}}
+label{display:block;font-size:12.5px;color:var(--mute);margin:11px 0 4px;font-weight:600}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:9px;background:var(--soft);color:var(--ink);font:inherit}
+.b{background:var(--brand);color:#fff;border:0;border-radius:9px;padding:9px 16px;font:600 14px Inter;cursor:pointer;transition:.15s}
+.b:hover{background:var(--brand-d);transform:translateY(-1px)}.g{background:none;border:1px solid var(--line);color:var(--ink);border-radius:9px;padding:8px 13px;cursor:pointer;font:600 13px Inter}
+.g:hover{background:var(--soft)}.sm{padding:7px 11px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-weight:600}
+:focus-visible{outline:2px solid var(--hi);outline-offset:2px}
+.chip{--c:#64748b;display:inline-flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--c) 14%,transparent);color:color-mix(in srgb,var(--c) 70%,var(--ink));border-radius:99px;padding:3px 10px;margin:2px 4px 2px 0;font-size:12.5px;font-weight:600}
+.c-Backend{--c:#2563eb}.c-Frontend{--c:#db2777}.c-Mobile{--c:#7c3aed}.c-Data\/AI{--c:#ea580c}.c-Database{--c:#059669}.c-Design{--c:#e11d48}.c-DevOps{--c:#475569}.c-Other{--c:#a16207}
+.dots{display:inline-flex;gap:2px}.dots i{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.25}.dots i.on{opacity:1}
+.chips .chip{cursor:pointer}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.sb{justify-content:space-between}.f1{flex:1;min-width:0}
+.mute{color:var(--mute);font-size:13px}.pick{display:flex;gap:6px}.pick select{flex:1}.pick .lv{flex:0 0 54px}
+.av{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;color:#fff;font:700 16px 'Bricolage Grotesque';flex:none}
+.ring{--p:0;width:54px;height:54px;border-radius:50%;background:conic-gradient(var(--hi) calc(var(--p)*1%),var(--line) 0);display:grid;place-items:center;position:relative;flex:none}
+.ring::before{content:"";position:absolute;inset:5px;border-radius:50%;background:var(--card)}.ring b{position:relative;font-size:13px}
+.seats{display:inline-flex;gap:4px;vertical-align:middle}.seats i{width:10px;height:10px;border-radius:3px;background:var(--line)}.seats i.on{background:var(--brand)}
+.tag{font-size:12px;font-weight:600;padding:2px 9px;border-radius:99px;background:var(--soft);border:1px solid var(--line);color:var(--mute)}.tag.open{color:var(--brand-d);border-color:var(--brand)}
+.empty{padding:40px 20px;text-align:center;color:var(--mute)}.sec{margin:18px 0 10px;font-size:20px}
+.gh::before{content:"↗ "}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:11px;display:none;z-index:99;box-shadow:var(--shadow)}
+dialog{border:1px solid var(--line);border-radius:16px;background:var(--card);color:var(--ink);width:min(520px,94vw);padding:22px;box-shadow:0 30px 80px #0008}
+dialog[open]{animation:pop .18s ease-out}@keyframes pop{from{opacity:0;transform:scale(.97) translateY(8px)}}dialog::backdrop{background:#0a121db0;backdrop-filter:blur(3px)}
+table{width:100%;border-collapse:collapse}td,th{padding:9px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}th{color:var(--mute);font-weight:600}
+.bar{height:9px;border-radius:5px;background:var(--brand);display:block;margin:3px 0}.bar.d{background:var(--hi)}
+.alert{background:color-mix(in srgb,#dc2626 11%,var(--card));color:color-mix(in srgb,#dc2626 62%,var(--ink));border:1px solid color-mix(in srgb,#dc2626 35%,var(--card));border-radius:10px;padding:10px 14px;margin:12px 0;animation:pop .18s ease-out}
+.alert ul{margin:6px 0 0 18px;padding:0}.bad{border-color:#dc2626!important;box-shadow:0 0 0 3px #dc262622}#s_sk.bad{border-radius:10px;padding:6px}
+.tab{display:none}.tab.on{display:block}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head>
+<body>
+<header>
+  <div class="logo"><svg viewBox="0 0 32 32"><circle cx="12" cy="16" r="9" fill="#2fb5ad"/><circle cx="21" cy="16" r="9" fill="#f2a900" fill-opacity=".85"/></svg>TeamUp</div>
+  <nav id="nav"><button data-t="find" class="on">Find teammates</button><button data-t="events">Events &amp; teams</button><button data-t="dash">My dashboard<span class="badge" id="badge" hidden></span></button><button data-t="insights">Insights</button></nav>
+  <div class="sp"></div><div id="auth" class="row"></div>
+</header>
+<main>
+<section id="find" class="tab on">
+  <div class="hero"><h2>Find the teammate your project is missing.</h2><p>Match with students whose skills fill the gaps in your hackathon team, ranked by how well they fit.</p>
+    <div class="stats"><div><b id="st_u">–</b><span>students</span></div><div><b id="st_t">–</b><span>teams forming</span></div><div><b id="st_e">–</b><span>upcoming events</span></div></div></div>
+  <div class="grid">
+    <div class="card side"><h3>Filters</h3>
+      <label>Search name or bio</label><input id="f_q" placeholder="e.g. Priya">
+      <label>Skills</label><div id="f_sk"></div>
+      <div class="row"><div class="f1"><label>Match</label><select id="f_match"><option value="all">All skills</option><option value="any">Any skill</option></select></div><div class="f1"><label>Min. level</label><select id="f_lvl"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div></div>
+      <div class="row"><div class="f1"><label>Gender</label><select id="f_gender"><option value="">Any</option><option>Male</option><option>Female</option><option>Other</option></select></div><div class="f1"><label>Graduation</label><select id="f_year"></select></div></div>
+      <div class="row"><div class="f1"><label>Availability</label><select id="f_av"><option value="">Any</option><option>Weekdays</option><option>Weekends</option><option>Flexible</option></select></div><div class="f1"><label>Branch</label><select id="f_branch"></select></div></div>
+      <label>Min. hours per week</label><input id="f_hours" type="number" min="0" max="80" placeholder="e.g. 8">
+      <label>Only students without a team in</label><select id="f_event"></select>
+      <div class="row" style="margin-top:16px"><button class="b f1" id="doSearch">Search</button><button class="g" id="reset">Reset</button></div></div>
+    <div class="pane"><div id="inviteBar" class="card" style="display:none"><div class="row"><span class="mute">Invite as leader of</span><select id="inviteTeam" style="width:auto"></select></div></div><div id="results"></div></div>
+  </div>
+</section>
+<section id="events" class="tab"><div class="card row" style="flex-wrap:nowrap"><input id="teamQ" placeholder="Search teams by name, e.g. Demo or Nova" aria-label="Search teams by name"><button class="b" id="teamGo">Search teams</button></div><div id="eventList"></div><div id="teamPanel"></div></section>
+<section id="dash" class="tab"><div id="dashBody"></div></section>
+<section id="insights" class="tab"><div id="insBody"></div></section>
+</main>
+<dialog id="dlg"><div id="dlgBody"></div></dialog><div id="toast" role="status"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const BR=['CSE/CSAI','IT','ECE/EVDT','EE','ICE','BT','Mechanical','Civil','Design'],YR=[2026,2027,2028,2029,2030];
+const opts=(a,any)=>(any?'<option value="">Any</option>':'')+a.map(x=>`<option>${esc(x)}</option>`).join('');
+let me=null,SK=[],EV=[],CAT={};
+async function api(p,body){const r=await fetch(p,body!==undefined?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{});
+  const d=await r.json().catch(()=>({}));if(!r.ok)throw new Error(d.error||'Something went wrong');return d}
+function toast(m){const t=$('#toast'),dl=$('#dlg');(dl.open?dl:document.body).appendChild(t);t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',3200)}
+const act=async(fn,ok)=>{try{await fn();if(ok)toast(ok)}catch(e){$('#dlg').open?dlgErr([e.message]):toast(e.message)}};
+const dlgErr=(errs,ids=[])=>{let b=$('#dlgErr');if(!b){b=document.createElement('div');b.id='dlgErr';b.className='alert';b.setAttribute('role','alert');$('#dlgBody h2').after(b)}
+  b.innerHTML=errs.length>1?`<b>Please fix the following:</b><ul>${errs.map(e=>`<li>${esc(e)}</li>`).join('')}</ul>`:`<b>${esc(errs[0])}</b>`;
+  document.querySelectorAll('#dlgBody .bad').forEach(x=>x.classList.remove('bad'));ids.forEach(i=>$('#'+i)?.classList.add('bad'));
+  $('#dlg').scrollTo({top:0,behavior:'smooth'});if(ids[0])$('#'+ids[0]).focus?.()};
+const chip=(n,lv)=>`<span class="chip c-${esc(CAT[n]||'Other')}">${esc(n)}${lv?`<span class="dots">${[1,2,3,4,5].map(i=>`<i class="${i<=lv?'on':''}"></i>`).join('')}</span>`:''}</span>`;
+const chips=a=>a.map(s=>typeof s==='string'?chip(s):chip(s.name,s.level)).join('');
+const av=n=>{let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%360;return `<div class="av" style="background:linear-gradient(135deg,hsl(${h} 55% 42%),hsl(${(h+40)%360} 60% 35%))">${esc(n.split(' ').filter(w=>/^[A-Za-z]/.test(w)).slice(0,2).map(w=>w[0]).join('').toUpperCase())}</div>`};
+const gh=u=>u?`<a class="gh" href="${esc(u)}" target="_blank" rel="noopener noreferrer">${/\/search\?/.test(u)?'Search on GitHub':'GitHub profile'}</a>`:'';
+const ring=s=>`<div class="ring" style="--p:${Math.round(s*100)}"><b>${Math.round(s*100)}%</b></div>`;
+const seats=(c,m)=>`<span class="seats">${Array.from({length:m},(_,i)=>`<i class="${i<c?'on':''}"></i>`).join('')}</span>`;
+
+function picker(el,withLevel){
+  el.sel=new Map();
+  el.innerHTML=`<div class="pick"><select class="sk">${SK.map(s=>`<option value="${s.id}">${esc(s.name)} · ${esc(s.category)}</option>`).join('')}</select>${withLevel?'<select class="lv">'+[1,2,3,4,5].map(n=>`<option ${n==3?'selected':''}>${n}</option>`).join('')+'</select>':''}<button type="button" class="sm">Add</button></div><div class="chips" style="margin-top:6px"></div>`;
+  const draw=()=>el.querySelector('.chips').innerHTML=[...el.sel].map(([id,l])=>{const n=SK.find(s=>s.id==id).name;return `<span class="chip c-${esc(CAT[n])}" data-id="${id}" title="Click to remove">${esc(n)}${withLevel?' · L'+l:''} ✕</span>`}).join('');
+  el.querySelector('button').onclick=()=>{el.sel.set(+el.querySelector('.sk').value,withLevel?+el.querySelector('.lv').value:1);draw()};
+  el.querySelector('.chips').onclick=e=>{const c=e.target.closest('.chip');if(c){el.sel.delete(+c.dataset.id);draw()}};
+  el.clear=()=>{el.sel.clear();draw()};
+}
+
+/* ---------- auth ---------- */
+async function refreshMe(){me=(await api('/api/me')).user;
+  $('#auth').innerHTML=me?`<span>${esc(me.name)}</span><button class="g" style="color:#fff;border-color:#ffffff44" id="out">Log out</button>`:`<button class="b" id="li">Log in</button><button class="g" style="color:#fff;border-color:#ffffff44" id="su">Sign up</button>`;
+  if(me){$('#out').onclick=async()=>{await api('/api/logout',{});location.reload()}}else{$('#li').onclick=loginDlg;$('#su').onclick=signupDlg}
+  const led=me?.led_teams||[];$('#inviteBar').style.display=led.length?'block':'none';
+  $('#inviteTeam').innerHTML=led.map(t=>`<option value="${t.id}">${esc(t.event_title)} — ${esc(t.name)}</option>`).join('');
+  if(me){const d=await api('/api/my');const n=d.incoming.length;$('#badge').hidden=!n;$('#badge').textContent=n}}
+function openDlg(h){$('#dlgBody').innerHTML=h;$('#dlg').showModal()}
+const login=(e,p)=>act(async()=>{await api('/api/login',{email:e,password:p});location.reload()});
+function loginDlg(){openDlg(`<h2>Welcome back</h2><label>Email</label><input id="l_e" type="email"><label>Password</label><input id="l_p" type="password">
+  <div class="row" style="margin-top:14px"><button class="b" id="l_go">Log in</button><button class="g" onclick="$('#dlg').close()">Cancel</button></div>
+  <div class="card" style="margin:18px 0 0;background:var(--soft);box-shadow:none"><b>Try the demo</b><div class="mute">Two accounts so you can send a request from one and accept from the other.</div>
+  <div class="row" style="margin-top:8px"><button class="g" id="d1">Aarav · backend dev</button><button class="g" id="d2">Diya · designer, team leader</button></div></div>`);
+  $('#l_go').onclick=()=>{const e=$('#l_e').value.trim(),p=$('#l_p').value,er=[],ids=[];if(!e){er.push('Enter your email');ids.push('l_e')}if(!p){er.push('Enter your password');ids.push('l_p')}
+    if(er.length)return dlgErr(er,ids);login(e,p)};$('#d1').onclick=()=>login('demo1@univ.edu','password123');$('#d2').onclick=()=>login('demo2@univ.edu','password123')}
+function signupDlg(){openDlg(`<h2>Create your profile</h2><label>Full name</label><input id="s_n"><label>Email</label><input id="s_e" type="email"><label>Password (8+ characters)</label><input id="s_p" type="password">
+  <div class="row"><div class="f1"><label>Gender</label><select id="s_g"><option>Male</option><option>Female</option><option>Other</option></select></div><div class="f1"><label>Graduation year</label><select id="s_y">${opts(YR)}</select></div></div>
+  <div class="row"><div class="f1"><label>Branch</label><select id="s_b">${opts(BR)}</select></div><div class="f1"><label>Availability</label><select id="s_a"><option>Flexible</option><option>Weekdays</option><option>Weekends</option></select></div></div>
+  <label>GitHub username or profile link</label><input id="s_gh" placeholder="octocat or github.com/octocat"><label>Hours per week</label><input id="s_h" type="number" value="10"><label>Your skills and level (1–5)</label><div id="s_sk"></div>
+  <div class="row" style="margin-top:14px"><button class="b" id="s_go">Create profile</button><button class="g" onclick="$('#dlg').close()">Cancel</button></div>`);
+  picker($('#s_sk'),true);
+  $('#s_go').onclick=async()=>{
+    const v=k=>$('#'+k).value.trim(),er=[],ids=[],add=(id,m)=>{er.push(m);ids.push(id)};
+    if(v('s_n').length<2)add('s_n','Enter your full name');
+    if(!v('s_e'))add('s_e','Email is required');else if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v('s_e')))add('s_e','Enter a valid email address, like name@college.edu');
+    if($('#s_p').value.length<8)add('s_p','Password must be at least 8 characters');
+    const g=v('s_gh');if(g&&!/^@?[A-Za-z0-9][A-Za-z0-9-]{0,38}$/.test(g)&&!/^(https?:\/\/)?(www\.)?github\.com\/[A-Za-z0-9-]{1,39}(\/.*)?$/i.test(g))add('s_gh','GitHub must be a username or a github.com profile link');
+    const h=$('#s_h').value;if(h===''||+h<0||+h>80)add('s_h','Hours per week must be between 0 and 80');
+    if(!$('#s_sk').sel.size)add('s_sk','Add at least one skill: pick it, choose a level, and click Add');
+    if(er.length)return dlgErr(er,ids);
+    try{await api('/api/register',{name:v('s_n'),email:v('s_e'),password:$('#s_p').value,gender:$('#s_g').value,grad_year:+$('#s_y').value,branch:$('#s_b').value,github_url:g,availability:$('#s_a').value,hours_per_week:+h,skills:[...$('#s_sk').sel].map(([id,level])=>({id,level}))});location.reload()}
+    catch(e){dlgErr([e.message],/email/i.test(e.message)?['s_e']:/password/i.test(e.message)?['s_p']:[])}}}
+
+/* ---------- find teammates ---------- */
+async function search(){
+  const p=new URLSearchParams(),m={q:'#f_q',gender:'#f_gender',grad_year:'#f_year',availability:'#f_av',branch:'#f_branch',min_hours:'#f_hours',event_id:'#f_event'};
+  for(const k in m){const v=$(m[k]).value;if(v)p.set(k,v)}
+  const sk=[...$('#f_sk').sel.keys()];if(sk.length){p.set('skills',sk);p.set('match',$('#f_match').value);p.set('min_level',$('#f_lvl').value)}
+  const list=await api('/api/users/search?'+p),canInvite=me&&$('#inviteTeam').value;
+  $('#results').innerHTML=`<div class="mute" style="margin:0 2px 10px">${list.length} student${list.length==1?'':'s'} found${list.length==50?' (showing the first 50, narrow the filters to see others)':''}</div>`+(list.map(u=>`<div class="card hover"><div class="row" style="flex-wrap:nowrap;align-items:flex-start">${av(u.name)}<div class="f1">
+   <div class="row sb"><h3>${esc(u.name)}</h3><div class="row">${gh(u.github_url)}${canInvite?`<button class="b" data-inv="${u.id}">Invite</button>`:''}</div></div>
+   <div class="mute">${esc(u.branch||'')} · Class of ${u.grad_year} · ${esc(u.availability)} · ${u.hours_per_week}h/week</div><div style="margin-top:6px">${chips(u.skills)}</div></div></div></div>`).join('')||'<div class="card empty"><b>No students match yet.</b><br>Try “Any skill”, a lower minimum level, or fewer filters.</div>');
+}
+$('#results').onclick=e=>{const b=e.target.closest('[data-inv]');if(b)act(()=>api(`/api/teams/${$('#inviteTeam').value}/invite`,{user_id:+b.dataset.inv}),'Invite sent')};
+$('#doSearch').onclick=()=>act(search);
+$('#reset').onclick=()=>{document.querySelectorAll('#find input,#find select').forEach(e=>{if(!e.closest('#f_sk')&&e.id!=='inviteTeam'&&e.id!=='f_match'&&e.id!=='f_lvl')e.value=''});$('#f_match').value='all';$('#f_lvl').value=3;$('#f_sk').clear();act(search)};
+
+/* ---------- events & teams ---------- */
+async function loadEvents(){EV=await api('/api/events');
+  $('#f_event').innerHTML='<option value="">Any event</option>'+EV.map(e=>`<option value="${e.id}">${esc(e.title)}</option>`).join('');
+  $('#st_e').textContent=EV.length;$('#st_t').textContent=EV.reduce((a,e)=>a+e.open_teams,0);
+  $('#eventList').innerHTML=`<h2 class="sec" style="margin-top:0">Hackathons and events</h2>`+EV.map(e=>`<div class="card hover row sb"><div><h3>${esc(e.title)}</h3><div class="mute">${esc(e.organizer)} · ${esc(e.mode)} · ${e.start_date} to ${e.end_date} · teams of up to ${e.max_team_size}</div>
+   <div style="margin-top:4px"><span class="tag open">${e.open_teams} open</span> <span class="tag">${e.teams} teams</span></div></div><div class="row">${me?`<button class="g" data-new="${e.id}">Create a team</button>`:''}<button class="b" data-ev="${e.id}">View teams</button></div></div>`).join('')}
+$('#eventList').onclick=e=>{const n=e.target.closest('[data-new]');if(n)return newTeamDlg(+n.dataset.new);const b=e.target.closest('[data-ev]');if(b)act(()=>openEvent(+b.dataset.ev))};
+const teamCard=t=>`<div class="card hover"><div class="row sb"><div><h3>${esc(t.name)}</h3><div class="mute">${t.event_title?esc(t.event_title)+' · ':''}Led by ${esc(t.leader_name)} · ${seats(t.current_size,t.max_size)} ${t.current_size}/${t.max_size} · <span class="tag ${t.status}">${t.status}</span></div></div>
+   <div class="row">${me&&me.id===t.leader_id?`<button class="g" data-sug="${t.id}">Suggest top 5 teammates</button>`:''}${t.status==='open'&&me&&me.id!==t.leader_id&&!t.members.some(m=>m.id===me.id)?`<button class="b" data-join="${t.id}">Request to join</button>`:''}${me&&t.members.some(m=>m.id===me.id)?`<button class="g" data-leave="${t.id}" data-lead="${me.id===t.leader_id?1:0}">Leave team</button>`:''}</div></div>
+   <p style="margin:8px 0">${esc(t.description||'')}</p><div class="mute">Looking for</div>${chips(t.required)}<div class="mute" style="margin-top:8px">Members</div><div class="row" style="gap:6px;margin-top:4px">${t.members.map(m=>`<span class="tag" style="display:inline-flex;gap:8px;align-items:center">${esc(m.name)}${m.role==='leader'?' ★':''}${me&&me.id===t.leader_id&&m.id!==me.id?`<button class="sm" style="padding:0 8px;color:#b42318" data-kick="${m.id}|${t.id}" data-name="${esc(m.name)}" title="Remove from team">Remove</button>`:''}</span>`).join('')}</div><div id="sug${t.id}"></div></div>`;
+let reload=()=>{};
+const afterChange=async()=>{const v=$('#f_event').value;await refreshMe();await loadEvents();$('#f_event').value=v;reload()};
+async function openEvent(id,keep){reload=()=>openEvent(id,true);
+  const ev=EV.find(e=>e.id==id),teams=await api(`/api/events/${id}/teams`);let rec='';
+  if(me){try{const r=await api(`/api/events/${id}/recommended-teams`);
+    rec=r.length?`<h2 class="sec">Best fits for your skills</h2>`+r.map(t=>`<div class="card row sb"><div class="row" style="flex-wrap:nowrap">${ring(t.score)}<div><b>${esc(t.name)}</b><div class="mute">needs your</div>${chips(t.matched)}</div></div><button class="b" data-join="${t.id}">Request to join</button></div>`).join(''):''}catch{}}
+  $('#teamPanel').innerHTML=`<div class="row sb"><h2 class="sec">${esc(ev.title)}</h2>${me?`<button class="b" id="newTeam">Create a team</button>`:'<span class="mute">Log in to create or join a team</span>'}</div>${rec}`+
+  teams.map(teamCard).join('')||'<div class="card empty">No teams yet. Be the first to create one.</div>';
+  if(me)$('#newTeam').onclick=()=>newTeamDlg(id);
+  if(!keep)$('#teamPanel').scrollIntoView({behavior:'smooth'});
+}
+const leaveTeam=(btn,done)=>{if(!confirm(btn.dataset.lead==='1'?'You lead this team. Leadership will pass to the longest-standing member, or the team will be disbanded if you are the only one. Leave anyway?':'Leave this team?'))return;
+  act(async()=>{const r=await api(`/api/teams/${btn.dataset.leave}/leave`,{});toast(r.message);await done()})};
+$('#teamPanel').onclick=e=>{
+  const lv=e.target.closest('[data-leave]');if(lv)return leaveTeam(lv,afterChange);
+  const kk=e.target.closest('[data-kick]');if(kk){const[u,t]=kk.dataset.kick.split('|');if(confirm(`Remove ${kk.dataset.name} from the team?`))act(async()=>{await api(`/api/teams/${t}/kick`,{user_id:+u});await afterChange()},'Member removed');return}
+  const j=e.target.closest('[data-join]');if(j){if(!me)return toast('Log in to send a request');const msg=prompt('Add a short note for the team leader (optional)');if(msg===null)return;act(()=>api(`/api/teams/${j.dataset.join}/join`,{message:msg}),'Request sent')}
+  const s=e.target.closest('[data-sug]');if(s)act(async()=>{const r=await api(`/api/teams/${s.dataset.sug}/recommendations`);
+    $('#sug'+s.dataset.sug).innerHTML=`<div style="margin-top:12px;border-top:1px solid var(--line);padding-top:10px"><b>Top matches</b> <span class="mute">ranked by cosine similarity</span>${r.map(u=>`<div class="row sb" style="margin-top:10px;flex-wrap:nowrap"><div class="row" style="flex-wrap:nowrap">${ring(u.score)}<div><b>${esc(u.name)}</b> <span class="mute">${esc(u.branch||'')} · ${u.grad_year} · ${esc(u.availability)}</span><div>${chips(u.matched)}</div></div></div><button class="b" data-inv2="${u.id}|${s.dataset.sug}">Invite</button></div>`).join('')||'<div class="mute" style="margin-top:6px">No free students have the missing skills yet.</div>'}</div>`});
+  const i=e.target.closest('[data-inv2]');if(i){const[u,t]=i.dataset.inv2.split('|');act(()=>api(`/api/teams/${t}/invite`,{user_id:+u}),'Invite sent')}};
+function newTeamDlg(eid){openDlg(`<h2>Create a team</h2><label>Team name</label><input id="t_n"><label>What are you building?</label><textarea id="t_d" rows="3"></textarea><label>Max team size</label><input id="t_m" type="number" min="2" max="10" value="4"><label>Skills you need</label><div id="t_sk"></div>
+  <div class="row" style="margin-top:14px"><button class="b" id="t_go">Create team</button><button class="g" onclick="$('#dlg').close()">Cancel</button></div>`);picker($('#t_sk'),false);
+  $('#t_go').onclick=()=>act(async()=>{await api('/api/teams',{event_id:eid,name:$('#t_n').value,description:$('#t_d').value,max_size:+$('#t_m').value,skills:[...$('#t_sk').sel.keys()]});$('#dlg').close();await refreshMe();await loadEvents();openEvent(eid)},'Team created')}
+
+async function searchTeams(keep){reload=()=>searchTeams(true);const q=$('#teamQ').value.trim();if(!q){$('#teamPanel').innerHTML='';return}
+  const teams=await api('/api/teams/search?q='+encodeURIComponent(q));
+  $('#teamPanel').innerHTML=`<h2 class="sec">${teams.length} team${teams.length==1?'':'s'} matching “${esc(q)}”</h2>`+(teams.map(teamCard).join('')||'<div class="card empty">No team has that name. Check the spelling or try fewer letters.</div>');
+  if(keep!==true)$('#teamPanel').scrollIntoView({behavior:'smooth'})}
+$('#teamGo').onclick=()=>act(()=>searchTeams());$('#teamQ').onkeydown=e=>{if(e.key==='Enter')act(()=>searchTeams())};
+
+/* ---------- dashboard ---------- */
+async function loadDash(){
+  if(!me){$('#dashBody').innerHTML='<div class="card empty">Log in to see your teams and requests.</div>';return}
+  const d=await api('/api/my');
+  const line=r=>r.kind==='request'?`<b>${esc(r.user_name)}</b> wants to join <b>${esc(r.team_name)}</b> <span class="mute">${esc(r.event_title)}</span>`:`<b>${esc(r.leader_name)}</b> invited <b>${esc(r.user_name)}</b> to <b>${esc(r.team_name)}</b> <span class="mute">${esc(r.event_title)}</span>`;
+  $('#dashBody').innerHTML=`<h2 class="sec" style="margin-top:0">My teams</h2>${d.teams.map(t=>`<div class="card row sb"><div><h3>${esc(t.name)}</h3><div class="mute">${esc(t.event_title)} · ${t.role}</div></div><div class="row">${seats(t.current_size,t.max_size)} <span class="tag ${t.status}">${t.current_size}/${t.max_size} · ${t.status}</span><button class="g" data-leave="${t.id}" data-lead="${t.role==='leader'?1:0}">Leave team</button></div></div>`).join('')||'<div class="card empty">You are not in a team yet. Browse events and send a request.</div>'}
+  <h2 class="sec">Waiting for your answer</h2>${d.incoming.map(r=>`<div class="card row sb"><div>${line(r)}${r.message?`<div class="mute">“${esc(r.message)}”</div>`:''}</div><div class="row"><button class="b" data-r="${r.id}|accept">Accept</button><button class="g" data-r="${r.id}|reject">Decline</button></div></div>`).join('')||'<div class="card empty">Nothing waiting for you.</div>'}
+  <h2 class="sec">Sent by you</h2>${d.outgoing.map(r=>`<div class="card row sb"><div>${line(r)}</div><button class="g" data-w="${r.id}">Withdraw</button></div>`).join('')||'<div class="card empty">No pending requests or invites.</div>'}`}
+$('#dashBody').onclick=e=>{const lv=e.target.closest('[data-leave]');if(lv)return leaveTeam(lv,async()=>{await afterChange();loadDash()});const r=e.target.closest('[data-r]'),w=e.target.closest('[data-w]');
+  if(r){const[id,a]=r.dataset.r.split('|');act(async()=>{await api(`/api/requests/${id}/respond`,{action:a});await refreshMe();await loadEvents();loadDash()},a==='accept'?'Accepted. The team has been updated.':'Declined')}
+  if(w)act(async()=>{await api(`/api/requests/${w.dataset.w}/withdraw`,{});await refreshMe();loadDash()},'Withdrawn')};
+
+/* ---------- insights ---------- */
+async function loadIns(){const a=await api('/api/analytics'),mx=Math.max(...a.skill_gap.map(s=>Math.max(s.demand,s.supply)),1);
+  $('#insBody').innerHTML=`<div class="card"><h3>Which skills are teams short of?</h3><p class="mute">Open teams asking for a skill (amber) against students who know it at level 3 or higher (green).</p><table>${a.skill_gap.map(s=>`<tr><td style="width:150px">${chip(s.name)}</td><td><span class="bar d" style="width:${s.demand/mx*100}%"></span><span class="bar" style="width:${s.supply/mx*100}%"></span></td><td class="mute" style="width:90px">${s.demand} vs ${s.supply}</td></tr>`).join('')}</table></div>
+  <div class="card"><h3>Events</h3><table><tr><th>Event</th><th>Teams</th><th>Students placed</th><th>Free students</th></tr>${a.events.map(e=>`<tr><td>${esc(e.title)}</td><td>${e.teams}</td><td>${e.placed}</td><td>${e.free_agents}</td></tr>`).join('')}</table></div>`}
+
+$('#dlg').addEventListener('input',e=>e.target.classList.remove('bad'));
+/* ---------- boot ---------- */
+document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{document.querySelectorAll('#nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.id===b.dataset.t));act(async()=>({dash:loadDash,insights:loadIns})[b.dataset.t]?.())});
+(async()=>{SK=await api('/api/skills');SK.forEach(s=>CAT[s.name]=s.category);
+  $('#f_year').innerHTML=opts(YR,1);$('#f_branch').innerHTML=opts(BR,1);picker($('#f_sk'),false);
+  await refreshMe();await loadEvents();api('/api/analytics').then(a=>$('#st_u').textContent=a.by_year.reduce((x,y)=>x+y.n,0));act(search)})();
+</script></body></html>
